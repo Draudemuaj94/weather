@@ -7,15 +7,15 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class WeatherForecast {
 
     public String getCityWeather(String city, Date datetime) throws IOException {
-        if (datetime == null) {
-            datetime = new Date();
-        }
+        datetime = Optional.ofNullable(datetime).orElse(new Date());
+        
         if (datetime.before(forecastDaysLimit())) {
             String woeid = getWhereOnEarthIdByCity(city);
 
