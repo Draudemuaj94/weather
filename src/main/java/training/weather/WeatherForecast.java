@@ -12,28 +12,46 @@ import org.json.JSONObject;
 
 public class WeatherForecast {
 
-	public String getCityWeather(String city, Date datetime) throws IOException {
-		if (datetime == null) {
-			datetime = new Date();
-		}
-		if (datetime.before(new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6)))) {
-			HttpRequestFactory rf = new NetHttpTransport().createRequestFactory();
-			HttpRequest req = rf
-				.buildGetRequest(new GenericUrl("https://www.metaweather.com/api/location/search/?query=" + city));
-			String r = req.execute().parseAsString();
-			JSONArray array = new JSONArray(r);
-			String woe = array.getJSONObject(0).get("woeid").toString();
-			rf = new NetHttpTransport().createRequestFactory();
-			req = rf.buildGetRequest(new GenericUrl("https://www.metaweather.com/api/location/" + woe));
-			r = req.execute().parseAsString();
-			JSONArray results = new JSONObject(r).getJSONArray("consolidated_weather");
-			for (int i = 0; i < results.length(); i++) {
-				if (new SimpleDateFormat("yyyy-MM-dd").format(datetime)
-					.equals(results.getJSONObject(i).get("applicable_date").toString())) {
-					return results.getJSONObject(i).get("weather_state_name").toString();
-				}
-			}
-		}
-		return "";
-	}
+    public String getCityWeather(String city, Date datetime) throws IOException {
+        if (datetime == null) {
+            datetime = new Date();
+        }
+        if (datetime.before(forecastDaysLimit())) {
+            String woeid = getWhereOnEarthIdByCity(city);
+
+            JSONArray WeatherForecast = getWeatherForecastById(woeid);
+
+            String datetimeFormat = new SimpleDateFormat("yyyy-MM-dd").format(datetime);
+            for (int i = 0; i < WeatherForecast.length(); i++) {
+                if (datetimeFormat.equals(WeatherForecast.getJSONObject(i).get("applicable_date").toString())) {
+                    return WeatherForecast.getJSONObject(i).get("weather_state_name").toString();
+                }
+            }
+        }
+        return "";
+    }
+
+    public Date forecastDaysLimit() throws IOException {
+        return new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6));
+    }
+
+    public String getWhereOnEarthIdByCity(String city) throws IOException {
+        HttpRequestFactory rf = new NetHttpTransport().createRequestFactory();
+        HttpRequest req = rf.buildGetRequest(
+                new GenericUrl("https://www.metaweather.com/api/location/search/?query=" + city)
+        );
+        String answer = req.execute().parseAsString();
+        JSONArray json = new JSONArray(answer);
+        String woeid = json.getJSONObject(0).get("woeid").toString();
+        return woeid;
+    }
+
+    public JSONArray getWeatherForecastById(String woeid) throws IOException {
+        HttpRequestFactory rf = new NetHttpTransport().createRequestFactory();
+        HttpRequest req = rf.buildGetRequest(new GenericUrl("https://www.metaweather.com/api/location/" + woeid));
+        String answer = req.execute().parseAsString();
+        JSONArray results = new JSONObject(answer).getJSONArray("consolidated_weather");
+        return results;
+    }
+
 }
