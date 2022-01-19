@@ -7,14 +7,20 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class WeatherForecast {
 
+    /**
+     * Devolvera el clima del dia pedido.
+     * @param city
+     * @param datetime
+     * @return
+     * @throws IOException 
+     */
     public String getCityWeather(String city, Date datetime) throws IOException {
-        datetime = Optional.ofNullable(datetime).orElse(new Date());
+        if (datetime == null) { datetime = new Date();}
         
         if (datetime.before(forecastDaysLimit())) {
             String woeid = getWhereOnEarthIdByCity(city);
@@ -31,6 +37,11 @@ public class WeatherForecast {
         return "";
     }
 
+    /**
+     * Devuelve la fecha de ejecucion mas 6 dias.
+     * @return
+     * @throws IOException 
+     */
     public Date forecastDaysLimit() throws IOException {
         return new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6));
     }
