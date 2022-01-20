@@ -13,15 +13,18 @@ import org.json.JSONObject;
 public class WeatherForecast {
 
     /**
-     * Devolvera el clima del dia pedido.
+     * Devolvera la predicion del dia pedido.
+     *
      * @param city
      * @param datetime
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public String getCityWeather(String city, Date datetime) throws IOException {
-        if (datetime == null) { datetime = new Date();}
-        
+        if (datetime == null) {
+            datetime = new Date();
+        }
+
         if (datetime.before(forecastDaysLimit())) {
             String woeid = getWhereOnEarthIdByCity(city);
 
@@ -39,8 +42,9 @@ public class WeatherForecast {
 
     /**
      * Devuelve la fecha de ejecucion mas 6 dias.
+     *
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     public Date forecastDaysLimit() throws IOException {
         return new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6));
