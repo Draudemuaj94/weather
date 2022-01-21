@@ -12,15 +12,21 @@ import org.json.JSONObject;
 
 public class WeatherForecast {
 
+    /**
+     * Devolvera la predicion del dia pedido.
+     *
+     * @param city
+     * @param datetime
+     * @return
+     * @throws IOException
+     */
     public String getCityWeather(String city, Date datetime) throws IOException {
         if (datetime == null) {
             datetime = new Date();
         }
         if (datetime.before(forecastDaysLimit())) {
-            String woeid = getWhereOnEarthIdByCity(city);
-
-            JSONArray WeatherForecast = getWeatherForecastById(woeid);
-
+            String woeId = getWhereOnEarthIdByCity(city);
+            JSONArray WeatherForecast = getWeatherForecastById(woeId);
             String datetimeFormat = new SimpleDateFormat("yyyy-MM-dd").format(datetime);
             for (int i = 0; i < WeatherForecast.length(); i++) {
                 if (datetimeFormat.equals(WeatherForecast.getJSONObject(i).get("applicable_date").toString())) {
@@ -31,8 +37,14 @@ public class WeatherForecast {
         return "";
     }
 
-    public Date forecastDaysLimit() throws IOException {
-        return new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6));
+    /**
+     * Devuelve la fecha de ejecucion mas 6 dias. 518.400.000 son 6 dias en
+     * milisegundo.
+     *
+     * @return
+     */
+    public Date forecastDaysLimit() {
+        return new Date(new Date().getTime() + (518400000));
     }
 
     public String getWhereOnEarthIdByCity(String city) throws IOException {
@@ -42,15 +54,16 @@ public class WeatherForecast {
         );
         String answer = req.execute().parseAsString();
         JSONArray json = new JSONArray(answer);
-        String woeid = json.getJSONObject(0).get("woeid").toString();
-        return woeid;
+        String woeId = json.getJSONObject(0).get("woeid").toString();
+        return woeId;
     }
 
-    public JSONArray getWeatherForecastById(String woeid) throws IOException {
+    public JSONArray getWeatherForecastById(String woeId) throws IOException {
         HttpRequestFactory rf = new NetHttpTransport().createRequestFactory();
-        HttpRequest req = rf.buildGetRequest(new GenericUrl("https://www.metaweather.com/api/location/" + woeid));
+        HttpRequest req = rf.buildGetRequest(new GenericUrl("https://www.metaweather.com/api/location/" + woeId));
         String answer = req.execute().parseAsString();
         JSONArray results = new JSONObject(answer).getJSONArray("consolidated_weather");
+
         return results;
     }
 

@@ -1,24 +1,30 @@
 package training.weather;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import org.junit.Test;
 
 public class WeatherForecastTest {
 
+    /**
+     * Si hacemos la busqueda del mismo dia nos devolvera un string con
+     * contenido.
+     *
+     * @throws IOException
+     */
     @Test
-    public void unfinished_test() throws IOException {
+    public void generic_test() throws IOException {
         WeatherForecast weatherForecast = new WeatherForecast();
         String forecast = weatherForecast.getCityWeather("Madrid", new Date());
-        System.out.println(forecast);
+        assertNotSame("", forecast);
     }
 
     /**
-     * Cuando pedimos el tiempo en null, nos da el tiempo de hoy.
-     * @throws IOException 
+     * Cuando pasamos el tiempo en null, nos da el tiempo de hoy.
+     *
+     * @throws IOException
      */
     @Test
     public void nullDay_test() throws IOException {
@@ -29,15 +35,16 @@ public class WeatherForecastTest {
     }
 
     /**
-     * A partir de los 6 dias no hay previsiones, así que limitamos la busqueda.
-     * @throws IOException 
+     * Si pasamos el limite de dias de pronostico no hace la busqueda.
+     *
+     * @throws IOException
      */
     @Test
     public void limitDay_test() throws IOException {
         WeatherForecast weatherForecast = new WeatherForecast();
         String forecast = weatherForecast.getCityWeather(
-                "Madrid", new Date(new Date().getTime() + (1000 * 60 * 60 * 24 * 6))
-        ); 
+                "Madrid", new Date(new Date().getTime() + (518400000))
+        );
         assertEquals("", forecast);
     }
 
