@@ -15,7 +15,7 @@ public class WeatherForecastTest {
      * @throws IOException
      */
     @Test
-    public void general_test() throws IOException {
+    public void generic_test() throws IOException {
         WeatherForecast weatherForecast = new WeatherForecast();
         String forecast = weatherForecast.getCityWeather("Madrid", new Date());
         assertNotSame("", forecast);
@@ -43,7 +43,7 @@ public class WeatherForecastTest {
     public void limitDay_test() throws IOException {
         WeatherForecast weatherForecast = new WeatherForecast();
         String forecast = weatherForecast.getCityWeather(
-                "Madrid", weatherForecast.forecastDaysLimit()
+                "Madrid", new Date(new Date().getTime() + (518400000))
         );
         assertEquals("", forecast);
     }
